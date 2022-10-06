@@ -18,7 +18,7 @@ def show_wishlist(request):
     context = {
     'list_barang': data_barang_wishlist,
     'nama': 'TM Revanza Narendra Pradipta',
-    'last_login': request.COOKIES['last_login'],
+    'last_login': request.COOKIES.get('last_login'),
     }
     return render(request, "wishlist.html", context)
 
@@ -63,3 +63,29 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('wishlist:login'))
     response.delete_cookie('last_login')
     return response
+
+def wishlist_ajax(request):
+    data_barang_wishlist = BarangWishlist.objects.all()
+    context = {
+    'list_barang': data_barang_wishlist,
+    'nama': 'TM Revanza Narendra Pradipta',
+    'last_login': request.COOKIES.get('last_login'),
+    }
+    return render(request, 'wishlist_ajax.html', context)
+
+def create_wishlist(request):
+    if request.method == "POST":
+        nama_barang = request.POST.get('nama_barang')
+        harga_barang = request.POST.get('nama_barang')
+        deskripsi = request.POST.get('deskripsi')
+
+        input_barang = BarangWishlist(
+            nama_barang = nama_barang,
+            harga_barang = harga_barang,
+            deskripsi = deskripsi)
+        
+        input_barang.save()
+
+        return HttpResponse(serializers.serialize("json", input_barang), content_type="application/json")
+
+        
